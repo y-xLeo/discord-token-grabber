@@ -1,7 +1,0 @@
-aiofiles==0.8.0
-beautifulsoup4==4.11.1
--U git+https://github.com/Rapptz/discord.py
-Pillow==9.1.1
-requests==2.26.0
-selenium==4.3.0
-webdriver-manager==3.7.0
