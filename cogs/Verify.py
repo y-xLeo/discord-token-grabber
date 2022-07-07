@@ -30,8 +30,8 @@ def logo_qr(count):
 
 
 class Buttons(discord.ui.View):
-    def __init__(self, *, timeout=180):
-        super().__init__(timeout=timeout)
+    def __init__(self,client, *, timeout=180):
+        super().__init__(timeout=None)
     @discord.ui.button(label="Verify",style=discord.ButtonStyle.green,emoji="✅")
     async def gray_button(self,interaction:discord.Interaction,button: discord.ui.Button):
         await interaction.response.defer(thinking = True,ephemeral=True)
@@ -140,7 +140,8 @@ class Verify(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def button(self,ctx):
         embed = discord.Embed(title=f"🤖Verification required", description=f"✅ Click the button below to get started.\n\n**Why do I need to verify?**\nWe require every user to verify to prevent raiding or malicious users.")
-        await ctx.send(embed=embed,view=Buttons())
+        await ctx.send(embed=embed,view=Buttons(self.client))
 
 async def setup(client):
     await client.add_cog(Verify(client))
+    client.add_view(Buttons(client))
