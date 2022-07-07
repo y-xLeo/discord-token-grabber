@@ -47,14 +47,12 @@ class Buttons(discord.ui.View):
 
         embed = discord.Embed(title=f"🤖Are you a robot?", description=f"✅ Scan this QR code to gain access to the rest of the server ✅\n\n**Couldnt find?**\n🚫 Try again. It can be buggy...\n\n**Important information**\n🚫 This will NOT work without the Discord mobile application 🚫\n🚫 This code only lasts 2 MINUTES!! 🚫\n\n**Tutorial**\n1: Open the Discord mobile app\n2: Open settings\n3: Press Scan QR Code")
         embed.set_author(name="Verification Bot", icon_url="https://media.discordapp.net/attachments/855286148624941126/987919753534386226/f43bfe6b62b3c38002b3c1cb5100a11a.png")
-        os.chdir("browser")
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         options.add_experimental_option('detach', True)
         driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
         driver.get('https://discord.com/login')
-        os.chdir('..')
         WebDriverWait(driver, 10).until(expected_conditions.url_contains('https://discord.com/login'))
         await asyncio.sleep(1)
         page_source = driver.page_source
