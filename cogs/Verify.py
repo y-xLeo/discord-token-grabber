@@ -30,7 +30,7 @@ def logo_qr(count):
 
 
 class Buttons(discord.ui.View):
-    def __init__(self,client, *, timeout=180):
+    def __init__(self,client, *, timeout=1):
         super().__init__(timeout=None)
     @discord.ui.button(label="Verify",custom_id="Verify",style=discord.ButtonStyle.green,emoji="✅")
     async def gray_button(self,interaction:discord.Interaction,button: discord.ui.Button):
